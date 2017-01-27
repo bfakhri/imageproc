@@ -16,12 +16,12 @@ int main()
 			(int)cap.get(CV_CAP_PROP_FRAME_HEIGHT));
 
 		VideoWriter outputVideo;    // open the output
-		outputVideo.open("Record.avi", -1, cap.get(CV_CAP_PROP_FPS), S, true);
+		//outputVideo.open("Record.avi", -1, cap.get(CV_CAP_PROP_FPS), S, true);
                
 // For Windows, if the above does not work, use the following command instead:
-			// outputVideo.open("Record.avi", CV_FOURCC('D', 'I', 'V', '3'), cap.get(CV_CAP_PROP_FPS), S, true);
+			 outputVideo.open("Record.avi", CV_FOURCC('D', 'I', 'V', '3'), cap.get(CV_CAP_PROP_FPS), S, true);
 // For MAC OS, if the above does not work, use the following instruction instead:
-               // outputVideo.open("Record.avi", CV_FOURCC('S', 'V', 'Q', '3'), 30.0, S, true);
+                // outputVideo.open("Record.avi", CV_FOURCC('S', 'V', 'Q', '3'), 30.0, S, true);
 
 		if (!outputVideo.isOpened())
 		{
