@@ -2,67 +2,59 @@
 // Exercise 1.1
 // 2-2-17
 
+#include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <iostream>
-using namespace std;
-using namespace cv;
 
 int main()
 {
-		VideoCapture cap(0);	// open the default camera
-		if (!cap.isOpened())	// check if we succeeded
-			return -1;
+	std::cout << "OpenCV Version: " << CV_MAJOR_VERSION << "." << CV_MINOR_VERSION << std::endl;
+	// A)
+	// B) Load and display the image 
+	const char* imagename = "zebras.jpg";	// Name of image
+	cv::Mat img = cv::imread(imagename, CV_LOAD_IMAGE_GRAYSCALE);	// Read image into Mat
+	std::cout << "Image is of type: " << img.type() << " and has: " << img.channels() << " channels" << std::endl;
+	std::cout << "Image is of shape: (" << img.rows << ", " << img.cols << ")" << std::endl;
 
-		// Acquire Input Size
-		Size S = Size((int)cap.get(CV_CAP_PROP_FRAME_WIDTH)/2, (int)cap.get(CV_CAP_PROP_FRAME_HEIGHT)/2);
+	// Checks to make sure image loaded properly
+	if(img.empty() || !img.data){
+		std::cout << "Error loading image" << std::endl;
+		return -1;
+	}
 
-		VideoWriter outputVideo;    // open the output
-               
-		// For Windows, if the above does not work, use the following command instead:
-		outputVideo.open("Record.avi", CV_FOURCC('D', 'I', 'V', '3'), cap.get(CV_CAP_PROP_FPS), S, true);
-		// For MAC OS, if the above does not work, use the following instruction instead:
-                // outputVideo.open("Record.avi", CV_FOURCC('S', 'V', 'Q', '3'), 30.0, S, true);
+	cv::namedWindow("Zebras", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Zebras", img);
+	cv::waitKey();					// Waits for keypress before destroying window
+	cv::destroyWindow("Zebra");
 
-		if (!outputVideo.isOpened()){
-			cout << "Could not open the output video for write: " << endl;
-			return -1;
+	// C) Compute the DFT matrix F(K1, K2)
+	// Compute the DFT
+	cv::Mat img_dft;
+	cv::Mat dft_inv;
+	for(int L=255; L>1; L-=10){
+		// Convert to right format
+		img.convertTo(img, CV_32FC1);
+		// Perform the DFT
+		cv::dft(img, img_dft, cv::DFT_SCALE|cv::DFT_COMPLEX_OUTPUT);
+		// Perform truncation with L
+		for(int r=L; r<img_dft.rows-L; r++){
+			for(int c=L; c<img_dft.cols-L; c++){
+				img_dft.at<int>(r,c) = 0;
+			}
 		}
+				
+		// Get inverse of DFT
+		cv::dft(img_dft, dft_inv, cv::DFT_INVERSE|cv::DFT_REAL_OUTPUT);
+		std::cout << "L = " << L << std::endl;
+		// Convert back to CV_8UC1 and Display
+		dft_inv.convertTo(dft_inv, CV_8U);	
+		//cv::imwrite(dft_in
+		cv::namedWindow("Zebras", CV_WINDOW_AUTOSIZE);
+		cv::imshow("Zebras", dft_inv);
+		cv::waitKey();					// Waits for keypress before destroying window
+		cv::destroyWindow("Zebra");
+	}
+	
 
-		// Create two windows
-		namedWindow("Original Video", 1);
-		namedWindow("Downsampled Video", 1);
-		cout << "Start Reading and Writing" << endl;
-
-		// Capture 200 Frames
-		int cnt = 0;
-		while (cnt<200)
-		{
-			Mat frame;
-			cap >> frame; // get a new frame from camera
-			// Here we downsample
-			IplImage orig = frame;
-			IplImage * downSmp = cvCreateImage(cvSize(frame.cols/2, frame.rows/2), 8, 3);
-			cvPyrDown(&orig, downSmp);
-			Mat frameDown = cvarrToMat(downSmp);
-			outputVideo << frameDown;  // store the frame to the output video file
-
-			// Display the image
-			imshow("Original Video", frame);
-			imshow("Downsampled Video", frameDown);
-			// End the streams if key is pressed
-			if (waitKey(30) >= 0) 
-				break;
-
-			// Release the memory alloted to the new image
-			cvReleaseImage(&downSmp);
-
-			cnt++;
-
-		}
-		// the camera will be deinitialized automatically in VideoCapture destructor
-		cout << "Finished Writing" << endl;
-
-		return 0;
+	return 0;
 }
-
