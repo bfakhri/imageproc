@@ -1,0 +1,73 @@
+%% Bijan Fakhri
+%% Exercise 2.1
+
+% Read image in
+img = imread('cameraman.jpg');
+
+% Show the image
+imshow(img);
+
+% Create the filter's impulse response
+h = ones(3)/9;
+
+% Convolve filter with image
+y1 = conv2(single(img), h, 'same');
+
+
+% Show the image
+imshow(uint8(y1));
+
+% Save the image
+imwrite(uint8(y1), 'y1.jpg')
+
+% Printout
+y1
+
+% Filter function on image
+y2 = filter2(h, img);
+
+% Show the image
+imshow(uint8(y2))
+
+% Save the image
+imwrite(uint8(y2), 'y2.jpg')
+
+% Create the seperated filters
+h_n1 = ones(3,1)/3;
+h_n2 = ones(1,3)/3;
+
+% Print result of equality
+disp('h == h_n1*h_n2?')
+h == h_n1*h_n2
+
+% Filter the image with 1D filters
+y3 = zeros(length(img));
+for n1 = 1:length(img)
+    y3(n1, :) = conv(double(img(n1,:)), h_n1, 'same');
+end
+for n2 = 1:length(img)
+    y3(:, n2) = conv(double(y3(:,n2)), h_n2, 'same');
+end
+
+% Show y3
+imshow(uint8(y3));
+
+% Save the image
+imwrite(uint8(y3), 'y3.jpg')
+
+% Comparing y1 and y3
+disp('The difference between y1 and y3: ')
+sum(sum(uint8(y3) - uint8(y1)))
+
+% Plot the 2D frequency response to show it is low pass filter
+freqz2(h)
+[H, f1, f2] = freqz2(h)
+
+
+% Change to high pass filter by shifting by pi
+% Create the seperated filters
+h_n1_high = ones(3,1)/3;
+h_n2_high = ones(1,3)/3;
+
+
+
