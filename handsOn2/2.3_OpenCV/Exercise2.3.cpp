@@ -102,7 +102,7 @@ int main()
 			std::cout << "----------------------------------------------------" << std::endl;
 			std::cout << "---Lmin,DCT = 85. This is the Corresponding Image---" << std::endl;
 			std::cout << "----------------------------------------------------" << std::endl;
-			cv::imwrite("./LminDCT-85.jpg", dft_inv);
+			cv::imwrite("./LminDCT-85.jpg", dct_inv);
 		}
 		cv::namedWindow("Zebras", CV_WINDOW_AUTOSIZE);
 		cv::imshow("Zebras", dct_inv);
