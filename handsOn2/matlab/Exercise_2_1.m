@@ -65,9 +65,12 @@ freqz2(h)
 
 
 % Change to high pass filter by shifting by pi
-% Create the seperated filters
-h_n1_high = ones(3,1)/3;
-h_n2_high = ones(1,3)/3;
+h_high_s1 = ifft(fftshift(fft2(h)));
+freqz2(h_high_s1)
 
 
+% Convolve filter with image
+y4 = conv2(single(img), h_high, 'same');
+
+%imshow(y4);
 
